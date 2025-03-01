@@ -7,6 +7,7 @@ public class proyecto {
         int numero1 = scanner.nextInt();
         System.out.print("Ingrese el segundo número: ");
         int numero2 = scanner.nextInt();
+        
 
         int suma = numero1 + numero2;
         int resta = numero1 - numero2;
