@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Yisus Wolf</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .menu button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    .menu button:hover {
+      background-color: #2980b9;
+    }
+    .formulario, .reporte {
+      margin-top: 20px;
+      display: none;
+    }
+    .formulario input, .formulario select {
+      margin: 5px;
+      padding: 8px;
+      width: 200px;
+    }
+    .tabla {
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    .tabla td, .tabla th {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .tabla th {
+      background-color: #3498db;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏨 Hotel Yisus Wolf</h1>
+
+  <div class="menu">
+    <button onclick="mostrarFormulario('reserva')">1️⃣ Registrar Reserva</button>
+    <button onclick="mostrarFormulario('cancelar')">2️⃣ Cancelar Reserva</button>
+    <button onclick="generarReporte()">3️⃣ Ver Reporte</button>
+    <button onclick="salir()">4️⃣ Salir</button>
+  </div>
+
+  <div id="reserva" class="formulario">
+    <h2>Registrar Reserva</h2>
+    <input type="number" id="edad" placeholder="Edad"><br>
+    <input type="text" id="nombre" placeholder="Nombre del cliente"><br>
+    <input type="number" id="piso" placeholder="Piso (1-4)"><br>
+    <input type="number" id="habitacion" placeholder="Habitación (1-5)"><br>
+    <input type="number" id="noches" placeholder="N° de noches"><br>
+    <select id="tipoHabitacion">
+      <option value="50000">Habitación Cómoda - $50.000</option>
+      <option value="100000">Suite - $100.000</option>
+    </select><br>
+    <button onclick="registrarReserva()">Registrar</button>
+  </div>
+
+  <div id="cancelar" class="formulario">
+    <h2>Cancelar Reserva</h2>
+    <input type="number" id="cancelarPiso" placeholder="Piso (1-4)"><br>
+    <input type="number" id="cancelarHabitacion" placeholder="Habitación (1-5)"><br>
+    <button onclick="cancelarReserva()">Cancelar</button>
+  </div>
+
+  <div id="reporte" class="reporte">
+    <h2>Reporte de Habitaciones</h2>
+    <table class="tabla" id="tablaReporte"></table>
+  </div>
+
+  <script>
+    const habitaciones = Array.from({length: 4}, () => Array(5).fill(null));
+
+    function mostrarFormulario(id) {
+      document.querySelectorAll('.formulario').forEach(f => f.style.display = 'none');
+      document.getElementById('reporte').style.display = 'none';
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function registrarReserva() {
+      const edad = parseInt(document.getElementById('edad').value);
+      if (edad < 18) {
+        alert("No puede registrarse por ser menor de edad");
+        return;
+      }
+      const nombre = document.getElementById('nombre').value;
+      const piso = parseInt(document.getElementById('piso').value) - 1;
+      const hab = parseInt(document.getElementById('habitacion').value) - 1;
+      const noches = parseInt(document.getElementById('noches').value);
+      const precio = parseInt(document.getElementById('tipoHabitacion').value);
+
+      if (habitaciones[piso][hab]) {
+        alert("Habitación ocupada");
+        return;
+      }
+
+      habitaciones[piso][hab] = {nombre, noches, precio};
+      alert(`Reserva realizada para ${nombre}. Total: $${precio * noches}`);
+    }
+
+    function cancelarReserva() {
+      const piso = parseInt(document.getElementById('cancelarPiso').value) - 1;
+      const hab = parseInt(document.getElementById('cancelarHabitacion').value) - 1;
+      if (!habitaciones[piso][hab]) {
+        alert("Habitación ya libre");
+        return;
+      }
+      alert(`Reserva de ${habitaciones[piso][hab].nombre} cancelada.`);
+      habitaciones[piso][hab] = null;
+    }
+
+    function generarReporte() {
+      let tabla = `<tr><th>Piso</th><th>Habitación</th><th>Estado</th><th>Total</th></tr>`;
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 5; j++) {
+          let info = habitaciones[i][j];
+          if (info) {
+            tabla += `<tr><td>${i+1}</td><td>${j+1}</td><td>Ocupada por ${info.nombre}</td><td>$${info.precio * info.noches}</td></tr>`;
+          } else {
+            tabla += `<tr><td>${i+1}</td><td>${j+1}</td><td>Disponible</td><td>-</td></tr>`;
+          }
+        }
+      }
+      document.getElementById('tablaReporte').innerHTML = tabla;
+      document.querySelectorAll('.formulario').forEach(f => f.style.display = 'none');
+      document.getElementById('reporte').style.display = 'block';
+    }
+
+    function salir() {
+      alert("Gracias por usar nuestros servicios. Hasta pronto!");
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>
